@@ -1,0 +1,196 @@
+---
+argument_specs:
+  main:
+    short_description: Deploy UniFi Network application in Docker
+    description:
+      - This role deploys the UniFi Network application and its required MongoDB instance in Docker.
+      - 'Prerequisites:'
+      - '  - Docker'
+      - '  - A chosen data storage path on the host'
+    version_added: '1.0.0'
+    author: tigattack
+    options:
+      unifi_network_application_base_path:
+        type: path
+        default: /opt/unifi
+        description: Base path for UniFi Network application data on the host.
+
+      unifi_network_application_app_version:
+        type: str
+        default: latest
+        description: Docker image version for the UniFi Network application.
+
+      unifi_network_application_mongo_version:
+        type: str
+        default: 7.0
+        description: Docker image version for MongoDB.
+
+      unifi_network_application_user:
+        type: raw
+        default: 1000
+        description: User ID to run the containers as.
+
+      unifi_network_application_group:
+        type: raw
+        default: 1000
+        description: Group ID to run the containers as.
+
+      unifi_network_application_docker_network:
+        type: str
+        default: unifi
+        description: Name of the Docker network to connect the containers to.
+
+      unifi_network_application_mongo_dbname:
+        type: str
+        default: unifi
+        description: MongoDB database name for UniFi Network application.
+
+      unifi_network_application_mongo_user:
+        type: str
+        default: unifi
+        description: MongoDB username for UniFi Network application.
+
+      unifi_network_application_mongo_password:
+        type: str
+        required: true
+        description: MongoDB password for the UniFi Network application.
+
+      unifi_network_application_mongo_root_password:
+        type: str
+        required: true
+        description: MongoDB root password for the UniFi Network application.
+
+      unifi_network_application_timezone:
+        type: str
+        default: Etc/UTC
+        description:
+          - Timezone for the UniFi Network application.
+          - See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List.
+
+      unifi_network_application_app_memlimit:
+        type: int
+        default: 1024
+        description: Memory limit (in MB) for the UniFi Network application container.
+
+      unifi_network_application_deployment_always_pull:
+        type: bool
+        default: false
+        description:
+          - Always pull the UniFi Network application and MongoDB images.
+          - This can be useful to ensure you're always up to date if the images aren't pinned to a specific version (e.g. 'latest').
+
+      unifi_network_application_deployment_wait_for_health:
+        type: bool
+        default: true
+        description: Wait for the MongoDB and UniFi Network application containers to be healthy before continuing.
+
+      unifi_network_application_prune_images:
+        type: bool
+        default: false
+        description:
+          - Prune unused Docker images after deployment.
+          - 'WARNING: This role cannot filter pruned images, so ALL unused images will be removed.'
+
+      unifi_network_application_device_communication_expose:
+        type: bool
+        default: true
+        description:
+          - Expose device communication port.
+          - Required for device communication.
+
+      unifi_network_application_device_communication_port:
+        type: int
+        default: 8080
+        description: Device communication port.
+
+      unifi_network_application_web_admin_expose:
+        type: bool
+        default: true
+        description: Expose web admin port.
+
+      unifi_network_application_web_admin_port:
+        type: int
+        default: 8443
+        description: Web admin port.
+
+      unifi_network_application_stun_expose:
+        type: bool
+        default: true
+        description: Expose STUN port.
+
+      unifi_network_application_stun_port:
+        type: int
+        default: 3478
+        description: STUN port.
+
+      unifi_network_application_device_discovery_expose:
+        type: bool
+        default: true
+        description:
+          - Expose device discovery port.
+          - Required for UniFi device discovery.
+
+      unifi_network_application_device_discovery_port:
+        type: int
+        default: 10001
+        description: Device discovery port.
+
+      unifi_network_application_l2_discovery_expose:
+        type: bool
+        default: false
+        description:
+          - Expose L2 discovery port.
+          - Optional, but required for 'Make controller discoverable on L2 network' option.
+
+      unifi_network_application_l2_discovery_port:
+        type: int
+        default: 1900
+        description: L2 discovery port.
+
+      unifi_network_application_guest_portal_redirect_http_expose:
+        type: bool
+        default: false
+        description:
+          - Expose HTTP guest portal redirect port.
+          - Optional, but required for UniFi guest portal HTTP redirection.
+
+      unifi_network_application_guest_portal_redirect_http_port:
+        type: int
+        default: 8880
+        description: HTTP guest portal redirect port.
+
+      unifi_network_application_guest_portal_redirect_https_expose:
+        type: bool
+        default: false
+        description:
+          - Expose HTTPS guest portal redirect port.
+          - Optional, but required for UniFi guest portal HTTPS redirection.
+
+      unifi_network_application_guest_portal_redirect_https_port:
+        type: int
+        default: 8843
+        description: HTTPS guest portal redirect port.
+
+      unifi_network_application_mobile_speedtest_expose:
+        type: bool
+        default: false
+        description:
+          - Expose mobile throughput test port.
+          - Optional, but required for UniFi mobile throughput test.
+
+      unifi_network_application_mobile_speedtest_port:
+        type: int
+        default: 6789
+        description: Mobile throughput test port.
+
+      unifi_network_application_remote_syslog_expose:
+        type: bool
+        default: false
+        description:
+          - Expose remote syslog port.
+          - Optional, but required if you wish to use remote syslog.
+
+      unifi_network_application_remote_syslog_port:
+        type: int
+        default: 5514
+        description: Remote syslog port.

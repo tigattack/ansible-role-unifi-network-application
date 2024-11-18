@@ -1,0 +1,77 @@
+---
+
+unifi_network_application_app_path: "{{ [unifi_network_application_base_path, 'app'] | path_join }}"
+unifi_network_application_db_path: "{{ [unifi_network_application_base_path, 'db'] | path_join }}"
+
+unifi_network_application_containers_state: >-
+  {{ 'healthy' if unifi_network_application_deployment_wait_for_health else 'started' }}
+
+unifi_network_application_containers:
+  - name: unifi-mongo
+    image: mongo:{{ unifi_network_application_mongo_version }}
+    restart_policy: always
+    user: "{{ unifi_uid }}:{{ unifi_gid }}"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "mongosh --eval 'db.adminCommand(\"ping\")' | grep -q 'ok: 1'"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks: [{name: "{{ unifi_network_application_docker_network }}"}]
+    env:
+      MONGO_AUTHSOURCE: admin
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "{{ unifi_network_application_mongo_root_password }}"
+      MONGO_DBNAME: "{{ unifi_network_application_mongo_dbname }}"
+      MONGO_USER: "{{ unifi_network_application_mongo_user }}"
+      MONGO_PASS: "{{ unifi_network_application_mongo_password }}"
+    volumes:
+      - "{{ [unifi_network_application_db_path, 'data'] | path_join }}:/data/db"
+      - "{{ [unifi_network_application_db_path, 'mongo-init.sh'] | path_join }}:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+    pull: "{{ unifi_network_application_deployment_always_pull }}"
+    state: "{{ unifi_network_application_containers_state }}"
+
+  - name: unifi-network-application
+    image: lscr.io/linuxserver/unifi-network-application:{{ unifi_network_application_app_version }}
+    restart_policy: always
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          [ "$(curl -skf https://localhost:8443/status | jq -r .meta.up)" != "true" ] &&
+          { echo -n "UniFi Network application /status endpoint reports up=false"; exit 1; } || exit 0
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    ports: "{{ unifi_network_application_app_ports }}"
+    networks: [{name: "{{ unifi_network_application_docker_network }}"}]
+    env:
+      PUID: "{{ unifi_uid }}"
+      PGID: "{{ unifi_gid }}"
+      TZ: "{{ unifi_network_application_timezone }}"
+      MEM_LIMIT: "{{ unifi_network_application_app_memlimit | string }}"
+      MONGO_HOST: unifi-mongo
+      MONGO_PORT: '27017'
+      MONGO_AUTHSOURCE: admin
+      MONGO_DBNAME: "{{ unifi_network_application_mongo_dbname }}"
+      MONGO_USER: "{{ unifi_network_application_mongo_user }}"
+      MONGO_PASS: "{{ unifi_network_application_mongo_password }}"
+    volumes: ['{{ unifi_network_application_app_path }}:/config']
+    pull: "{{ unifi_network_application_deployment_always_pull }}"
+    state: "{{ unifi_network_application_containers_state }}"
+
+unifi_network_application_app_ports: >-
+  {{
+    ([unifi_network_application_device_communication_port ~ ':8080'] if unifi_network_application_device_communication_expose else []) +
+    ([unifi_network_application_web_admin_port ~ ':8443'] if unifi_network_application_web_admin_expose else []) +
+    ([unifi_network_application_stun_port ~ ':3478/udp'] if unifi_network_application_stun_expose else []) +
+    ([unifi_network_application_device_discovery_port ~ ':10001/udp'] if unifi_network_application_device_discovery_expose else []) +
+    ([unifi_network_application_l2_discovery_port ~ ':1900/udp'] if unifi_network_application_l2_discovery_expose else []) +
+    ([unifi_network_application_guest_portal_redirect_http_port ~ ':8880'] if unifi_network_application_guest_portal_redirect_http_expose else []) +
+    ([unifi_network_application_guest_portal_redirect_https_port ~ ':8843'] if unifi_network_application_guest_portal_redirect_https_expose else []) +
+    ([unifi_network_application_mobile_speedtest_port ~ ':6789'] if unifi_network_application_mobile_speedtest_expose else []) +
+    ([unifi_network_application_remote_syslog_port ~ ':5514/udp'] if unifi_network_application_remote_syslog_expose else [])
+  }}

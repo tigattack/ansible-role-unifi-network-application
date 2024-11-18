@@ -1,0 +1,8 @@
+---
+
+- name: Prune Docker images
+  community.docker.docker_prune:
+    images: true
+    images_filters:
+      dangling: false
+  when: unifi_network_application_prune_images

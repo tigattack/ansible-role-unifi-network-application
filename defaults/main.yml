@@ -1,0 +1,69 @@
+---
+
+unifi_network_application_base_path: /opt/unifi
+
+unifi_network_application_app_version: latest
+unifi_network_application_mongo_version: 7.0
+
+# Names or IDs of the user and group to run UniFi Network application and MongoDB containers as.
+unifi_network_application_user: 1000
+unifi_network_application_group: 1000
+
+unifi_network_application_docker_network: unifi
+
+unifi_network_application_mongo_dbname: unifi
+unifi_network_application_mongo_user: unifi
+# unifi_network_application_mongo_password: ''
+# unifi_network_application_mongo_root_password: ''
+
+unifi_network_application_timezone: Etc/UTC
+
+unifi_network_application_app_memlimit: 1024
+
+# Always pull the UniFi Network application and MongoDB images.
+# This can be useful to ensure you're always up to date if the images aren't pinned to a specific version (e.g. `latest`).
+unifi_network_application_deployment_always_pull: false
+
+# Wait for the MongoDB and UniFi Network application containers to be healthy before continuing.
+unifi_network_application_deployment_wait_for_health: true
+
+# Prune Docker images after deployment.
+# WARNING: This role cannot filter pruned images, so ALL unused images will be removed.
+# This is due to the mongo container not including labels we can use to filter for inclusion.
+unifi_network_application_prune_images: false
+
+# Required for device communication
+unifi_network_application_device_communication_expose: true
+unifi_network_application_device_communication_port: 8080
+
+# UniFi web admin port
+unifi_network_application_web_admin_expose: true
+unifi_network_application_web_admin_port: 8443
+
+# UniFi STUN port
+unifi_network_application_stun_expose: true
+unifi_network_application_stun_port: 3478
+
+# Required for device discovery
+unifi_network_application_device_discovery_expose: true
+unifi_network_application_device_discovery_port: 10001
+
+# Optional: Required for 'Make controller discoverable on L2 network' option
+unifi_network_application_l2_discovery_expose: false
+unifi_network_application_l2_discovery_port: 1900
+
+# Optional: UniFi guest portal HTTP redirect port
+unifi_network_application_guest_portal_redirect_http_expose: false
+unifi_network_application_guest_portal_redirect_http_port: 8880
+
+# Optional: UniFi guest portal HTTPS redirect port
+unifi_network_application_guest_portal_redirect_https_expose: false
+unifi_network_application_guest_portal_redirect_https_port: 8843
+
+# Optional: For mobile throughput test
+unifi_network_application_mobile_speedtest_expose: false
+unifi_network_application_mobile_speedtest_port: 6789
+
+# Optional: Remote syslog port
+unifi_network_application_remote_syslog_expose: false
+unifi_network_application_remote_syslog_port: 5514

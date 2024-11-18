@@ -1,0 +1,47 @@
+---
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ unifi_network_application_user }}"
+
+- name: Get group info
+  ansible.builtin.getent:
+    database: group
+    key: "{{ unifi_network_application_group }}"
+
+- name: Parse user and group IDs
+  ansible.builtin.set_fact:
+    unifi_uid: '{{ getent_passwd[getent_passwd.keys() | first][1] }}'
+    unifi_gid: '{{ getent_group[getent_group.keys() | first][1] }}'
+
+- name: Ensure appdata path exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ unifi_network_application_user }}"
+    group: "{{ unifi_network_application_group }}"
+    mode: '0775'
+    state: directory
+  loop:
+    - "{{ unifi_network_application_app_path }}"
+    - "{{ unifi_network_application_db_path }}"
+
+- name: Copy MongoDB init file
+  ansible.builtin.copy:
+    src: mongo-init.sh
+    dest: "{{ unifi_network_application_db_path }}/mongo-init.sh"
+    owner: "{{ unifi_network_application_user }}"
+    group: "{{ unifi_network_application_group }}"
+    mode: '0755'
+
+- name: Create Docker network
+  community.docker.docker_network:
+    name: "{{ unifi_network_application_docker_network }}"
+    state: present
+
+- name: Deploy containers
+  community.docker.docker_container: "{{ item }}"
+  loop: "{{ unifi_network_application_containers }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Prune Docker images
