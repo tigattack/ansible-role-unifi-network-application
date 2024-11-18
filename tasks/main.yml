@@ -39,7 +39,7 @@
     name: "{{ unifi_network_application_docker_network }}"
     state: present
 
-- name: Deploy containers
+- name: Deploy containers # noqa args[module]
   community.docker.docker_container: "{{ item }}"
   loop: "{{ unifi_network_application_containers }}"
   loop_control:
