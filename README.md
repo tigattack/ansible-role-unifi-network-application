@@ -324,7 +324,7 @@ Remote syslog port.
 
 MIT
 
-[build_badge]:  https://img.shields.io/github/actions/workflow/status/tigattack/ansible-role-unifi_network_application/test.yml?branch=main&label=Lint%20%26%20Test
-[build_link]:   https://github.com/tigattack/ansible-role-unifi_network_application/actions?query=workflow:Test
+[build_badge]:  https://img.shields.io/github/actions/workflow/status/tigattack/ansible-role-unifi-network-application/test.yml?branch=main&label=Lint%20%26%20Test
+[build_link]:   https://github.com/tigattack/ansible-role-unifi-network-application/actions?query=workflow:Test
 [galaxy_badge]: https://img.shields.io/ansible/role/d/tigattack/unifi_network_application
 [galaxy_link]:  https://galaxy.ansible.com/ui/standalone/roles/tigattack/unifi_network_application/
