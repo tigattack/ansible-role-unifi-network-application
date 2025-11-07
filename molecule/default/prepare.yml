@@ -10,9 +10,14 @@
         'degraded' in systemctl_status.stdout
       retries: 30
       delay: 5
-      when: ansible_service_mgr == 'systemd'
+      when: ansible_facts.service_mgr == 'systemd'
       changed_when: false
       failed_when: systemctl_status.rc > 1
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_facts.pkg_mgr == 'apt'
 
   roles:
     - role: geerlingguy.pip

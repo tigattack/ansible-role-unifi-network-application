@@ -2,4 +2,4 @@
 - name: Converge
   hosts: all
   roles:
-    - role: ansible-role-unifi-network-application
+    - role: tigattack.unifi_network_application

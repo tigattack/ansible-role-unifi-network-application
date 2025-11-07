@@ -12,8 +12,8 @@
 
 - name: Parse user and group IDs
   ansible.builtin.set_fact:
-    unifi_uid: '{{ getent_passwd[getent_passwd.keys() | first][1] }}'
-    unifi_gid: '{{ getent_group[getent_group.keys() | first][1] }}'
+    unifi_uid: '{{ ansible_facts.getent_passwd[ansible_facts.getent_passwd.keys() | first][1] }}'
+    unifi_gid: '{{ ansible_facts.getent_group[ansible_facts.getent_group.keys() | first][1] }}'
 
 - name: Ensure appdata path exists
   ansible.builtin.file:
