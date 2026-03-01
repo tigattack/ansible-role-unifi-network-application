@@ -305,6 +305,30 @@ Optional, but required if you wish to use remote syslog.
 
 Remote syslog port.
 
+### `unifi_network_application_app_extra_env`
+
+| Type  | Default |
+|-------|---------|
+| dict  | `{}`    |
+
+Optional extra environment variables to set in the UniFi Network application container.
+
+### `unifi_network_application_db_extra_env`
+
+| Type  | Default |
+|-------|---------|
+| dict  | `{}`    |
+
+Optional extra environment variables to set in the MongoDB container.
+
+### `unifi_network_application_db_ulimits`
+
+| Type      | Default |
+|-----------|---------|
+| list[str] | `{}`    |
+
+Optional list of ulimits to set for the MongoDB container. A ulimit is specified as `nofile:262144:262144`.
+
 ## Example Playbooks
 
 **Bare Minimum:**
