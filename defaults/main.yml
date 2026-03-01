@@ -67,3 +67,7 @@ unifi_network_application_mobile_speedtest_port: 6789
 # Optional: Remote syslog port
 unifi_network_application_remote_syslog_expose: false
 unifi_network_application_remote_syslog_port: 5514
+
+# Optional extra environment variables to set in the UniFi Network application and MongoDB containers.
+unifi_network_application_app_extra_env: {}
+unifi_network_application_db_extra_env: {}

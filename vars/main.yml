@@ -6,6 +6,37 @@ unifi_network_application_db_path: "{{ [unifi_network_application_base_path, 'db
 unifi_network_application_containers_state: >-
   {{ 'healthy' if unifi_network_application_deployment_wait_for_health else 'started' }}
 
+unifi_network_application_app_env_base:
+  PUID: "{{ unifi_uid }}"
+  PGID: "{{ unifi_gid }}"
+  TZ: "{{ unifi_network_application_timezone }}"
+  MEM_LIMIT: "{{ unifi_network_application_app_memlimit | string }}"
+  MONGO_HOST: unifi-mongo
+  MONGO_PORT: '27017'
+
+unifi_network_application_db_env_base:
+  MONGO_INITDB_ROOT_USERNAME: root
+  MONGO_INITDB_ROOT_PASSWORD: "{{ unifi_network_application_mongo_root_password }}"
+
+unifi_network_application_env_shared:
+  MONGO_AUTHSOURCE: admin
+  MONGO_DBNAME: "{{ unifi_network_application_mongo_dbname }}"
+  MONGO_USER: "{{ unifi_network_application_mongo_user }}"
+  MONGO_PASS: "{{ unifi_network_application_mongo_password }}"
+
+unifi_network_application_app_env: >-
+  {{
+    unifi_network_application_app_env_base |
+    combine(unifi_network_application_env_shared) |
+    combine(unifi_network_application_app_extra_env)
+  }}
+unifi_network_application_db_env: >-
+  {{
+    unifi_network_application_db_env_base |
+    combine(unifi_network_application_env_shared) |
+    combine(unifi_network_application_db_extra_env)
+  }}
+
 unifi_network_application_containers:
   - name: unifi-mongo
     image: mongo:{{ unifi_network_application_mongo_version }}
@@ -20,13 +51,7 @@ unifi_network_application_containers:
       retries: 3
       start_period: 30s
     networks: [{name: "{{ unifi_network_application_docker_network }}"}]
-    env:
-      MONGO_AUTHSOURCE: admin
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: "{{ unifi_network_application_mongo_root_password }}"
-      MONGO_DBNAME: "{{ unifi_network_application_mongo_dbname }}"
-      MONGO_USER: "{{ unifi_network_application_mongo_user }}"
-      MONGO_PASS: "{{ unifi_network_application_mongo_password }}"
+    env: "{{ unifi_network_application_db_env }}"
     volumes:
       - "{{ [unifi_network_application_db_path, 'data'] | path_join }}:/data/db"
       - "{{ [unifi_network_application_db_path, 'mongo-init.sh'] | path_join }}:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
@@ -48,17 +73,7 @@ unifi_network_application_containers:
       start_period: 60s
     ports: "{{ unifi_network_application_app_ports }}"
     networks: [{name: "{{ unifi_network_application_docker_network }}"}]
-    env:
-      PUID: "{{ unifi_uid }}"
-      PGID: "{{ unifi_gid }}"
-      TZ: "{{ unifi_network_application_timezone }}"
-      MEM_LIMIT: "{{ unifi_network_application_app_memlimit | string }}"
-      MONGO_HOST: unifi-mongo
-      MONGO_PORT: '27017'
-      MONGO_AUTHSOURCE: admin
-      MONGO_DBNAME: "{{ unifi_network_application_mongo_dbname }}"
-      MONGO_USER: "{{ unifi_network_application_mongo_user }}"
-      MONGO_PASS: "{{ unifi_network_application_mongo_password }}"
+    env: "{{ unifi_network_application_app_env }}"
     volumes: ['{{ unifi_network_application_app_path }}:/config']
     pull: "{{ unifi_network_application_deployment_always_pull }}"
     state: "{{ unifi_network_application_containers_state }}"

@@ -194,3 +194,13 @@ argument_specs:
         type: int
         default: 5514
         description: Remote syslog port.
+
+      unifi_network_application_app_extra_env:
+        type: dict
+        default: {}
+        description: Optional extra environment variables to set in the UniFi Network application container.
+
+      unifi_network_application_db_extra_env:
+        type: dict
+        default: {}
+        description: Optional extra environment variables to set in the MongoDB container.
